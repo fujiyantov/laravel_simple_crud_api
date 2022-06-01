@@ -2,12 +2,22 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Banks;
+use App\Models\Employees;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EmployeesControllerTest extends TestCase
 {
+    private $employee;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->employee = Employees::factory()->create();
+    }
+
     /**
      * A basic feature test example.
      *
@@ -68,6 +78,12 @@ class EmployeesControllerTest extends TestCase
                 "updated_at",
             ]
         );
+    }
+
+    public function testDeleteEmployeeById()
+    {
+        $response = $this->delete("/api/employees/" . $this->employee->id);
+        $response->assertStatus(200);
     }
 
     // TODO:: Create Filter, Post, Update, and Delete Resource

@@ -42,7 +42,7 @@ class EmployeesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Employees  $employees
+     * @param  int
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -77,11 +77,12 @@ class EmployeesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Employees  $employees
+     * @param  int
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Employees $employees)
+    public function destroy($id)
     {
-        //
+        $resource = Employees::findOrFail($id);
+        $resource->delete();
     }
 }

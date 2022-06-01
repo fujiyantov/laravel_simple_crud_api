@@ -20,8 +20,6 @@ class EmployeesFactory extends Factory
             "email" => $this->faker->email(),
             "ktp_number" => $this->faker->numerify("############"),
             "date_of_birth" => $this->faker->date(),
-            "position_id" => rand(1, 3),
-            "bank_id" => rand(1, 100),
             "account_number" => $this->faker->numerify("################"),
         ];
     }
