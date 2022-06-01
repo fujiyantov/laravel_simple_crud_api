@@ -20,8 +20,8 @@ class CreateEmployeesTable extends Migration
             $table->string('date_of_birth')->nullable();
             $table->string('phone_number');
             $table->string('email');
-            $table->string('province')->nullable();
-            $table->string('city')->nullable();
+            $table->unsignedInteger('province_id')->nullable();
+            $table->unsignedInteger('city_id')->nullable();
             $table->string('street')->nullable();
             $table->string('zip_code')->nullable();
             $table->string('ktp_number');

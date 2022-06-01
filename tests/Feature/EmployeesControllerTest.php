@@ -7,6 +7,7 @@ use App\Models\Banks;
 use App\Models\Employees;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 
 class EmployeesControllerTest extends TestCase
 {
@@ -80,11 +81,43 @@ class EmployeesControllerTest extends TestCase
         );
     }
 
+    /**
+     * Test delete employee by id
+     *
+     * @return void
+     */
     public function testDeleteEmployeeById()
     {
         $response = $this->delete("/api/employees/" . $this->employee->id);
         $response->assertStatus(200);
     }
 
-    // TODO:: Create Filter, Post, Update, and Delete Resource
+    /**
+     * Test store a newly resource
+     *
+     * @return void
+     */
+    public function testStoreEmployee()
+    {
+        $image = UploadedFile::fake()->image("images.jpg");
+
+        $response = $this->withHeader("Accept", "application/json")->post('/api/employees', [
+            'first_name' => "Jhon",
+            'last_name' => "Doe",
+            'date_of_birth' => "2022-01-01",
+            'phone_number' => "0987654321123",
+            'email' => "jhon@app.com",
+            'province_id' => 1,
+            'city_id' => 1,
+            'street' => "Menteng Stree No. VII",
+            'zip_code' => "202112",
+            'ktp_number' => "999999999999",
+            'ktp_file' => $image,
+            // 'position_id' => 1,
+            // 'bank_id' => 1,
+            'account_number' => "999999999999",
+        ]);
+
+        $response->assertStatus(201)->assertJsonStructure(["message"]);
+    }
 }

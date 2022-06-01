@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEmployeesRequest;
 use App\Models\Employees;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class EmployeesController extends Controller
 {
@@ -19,24 +22,26 @@ class EmployeesController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreEmployeesRequest $request)
     {
-        //
+        $data = $request->only(array_keys($request->rules()));
+
+        // Upload File
+        if ($request->file('ktp_file')) {
+            Storage::putFileAs("images", $request->file('ktp_file'), $request->file('ktp_file')->getClientOriginalName());
+            $data['ktp_file'] = $request->file('ktp_file')->getClientOriginalName() . '.' . $request->file('ktp_file')->getClientOriginalExtension();
+        }
+
+        Employees::create($data);
+
+        return response()->json([
+            "message" => "store employee has been successfully"
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -49,17 +54,6 @@ class EmployeesController extends Controller
     {
         $resource = Employees::findOrFail($id);
         return $resource;
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Employees  $employees
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Employees $employees)
-    {
-        //
     }
 
     /**
