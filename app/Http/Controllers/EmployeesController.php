@@ -18,7 +18,24 @@ class EmployeesController extends Controller
      */
     public function index()
     {
-        $collections = Employees::paginate(10);
+
+        $perPage = (int) request()->get('limit');
+        $perPage = $perPage >= 1 && $perPage <= 100 ? $perPage : 20;
+
+        $query = Employees::whereNotNull('position_id');
+
+        if (request()->get('name')) {
+            $query->where('first_name', 'like', '%' . strtolower(request()->get('name')) . '%');
+        }
+
+        if (request()->get('positions')) {
+            $query->whereHas('positions', function ($m) {
+                $positionID = (int) request()->get('positions');
+                return $m->where('id', $positionID);
+            });
+        }
+
+        $collections = $query->paginate($perPage);
         return $collections;
     }
 
@@ -36,7 +53,7 @@ class EmployeesController extends Controller
         // Upload File
         if ($file) {
             Storage::putFileAs("images", $file, $file->getClientOriginalName());
-            $data['ktp_file'] = $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+            $data['ktp_file'] = $file->getClientOriginalName();
         }
 
         Employees::create($data);
@@ -95,7 +112,7 @@ class EmployeesController extends Controller
         // Upload File
         if ($file) {
             Storage::putFileAs("images", $file, $file->getClientOriginalName());
-            $imageFileName = $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+            $imageFileName = $file->getClientOriginalName();
             $resource->ktp_file = $imageFileName;
         }
 

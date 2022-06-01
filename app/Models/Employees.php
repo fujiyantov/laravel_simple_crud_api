@@ -25,4 +25,9 @@ class Employees extends Model
         'bank_id',
         'account_number',
     ];
+
+    public function positions()
+    {
+        return $this->belongsTo(Positions::class, 'position_id');
+    }
 }
