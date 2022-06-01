@@ -2,12 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Models\Positions;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class PositionsControllerTest extends TestCase
 {
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        Positions::factory(3)->create();
+    }
+
     /**
      * A basic feature test example.
      *

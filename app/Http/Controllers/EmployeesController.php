@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreEmployeesRequest;
 use App\Models\Employees;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreEmployeesRequest;
+use App\Http\Requests\UpdateEmployeesRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class EmployeesController extends Controller
@@ -30,11 +31,12 @@ class EmployeesController extends Controller
     public function store(StoreEmployeesRequest $request)
     {
         $data = $request->only(array_keys($request->rules()));
+        $file = $request->file('ktp_file');
 
         // Upload File
-        if ($request->file('ktp_file')) {
-            Storage::putFileAs("images", $request->file('ktp_file'), $request->file('ktp_file')->getClientOriginalName());
-            $data['ktp_file'] = $request->file('ktp_file')->getClientOriginalName() . '.' . $request->file('ktp_file')->getClientOriginalExtension();
+        if ($file) {
+            Storage::putFileAs("images", $file, $file->getClientOriginalName());
+            $data['ktp_file'] = $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
         }
 
         Employees::create($data);
@@ -47,7 +49,7 @@ class EmployeesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -60,12 +62,48 @@ class EmployeesController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Employees  $employees
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Employees $employees)
+    public function update(UpdateEmployeesRequest $request, $id)
     {
-        //
+        $resource = Employees::findOrFail($id);
+
+        $data = $request->only(array_keys($request->rules()));
+        $file = $request->file('ktp_file');
+
+        $resource->first_name = $data['first_name'];
+        $resource->last_name = $data['last_name'];
+        $resource->date_of_birth = $data['date_of_birth'];
+        $resource->phone_number = $data['phone_number'];
+        $resource->email = $data['email'];
+        $resource->province_id = $data['province_id'];
+        $resource->city_id = $data['city_id'];
+        $resource->street = $data['street'];
+        $resource->zip_code = $data['zip_code'];
+        $resource->ktp_number = $data['ktp_number'];
+        $resource->account_number = $data['account_number'];
+
+        if (isset($data['position_id'])) {
+            $resource->position_id = $data['position_id'];
+        }
+
+        if (isset($data['bank_id'])) {
+            $resource->bank_id = $data['bank_id'];
+        }
+
+        // Upload File
+        if ($file) {
+            Storage::putFileAs("images", $file, $file->getClientOriginalName());
+            $imageFileName = $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension();
+            $resource->ktp_file = $imageFileName;
+        }
+
+        $resource->save();
+
+        return response()->json([
+            "message" => "update employee has been successfully"
+        ], Response::HTTP_OK);
     }
 
     /**

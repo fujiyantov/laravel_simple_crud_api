@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\Banks;
 use App\Models\Employees;
+use App\Models\Positions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -16,6 +17,8 @@ class EmployeesControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        Positions::factory(3)->create();
+        Banks::factory(3)->create();
         $this->employee = Employees::factory()->create();
     }
 
@@ -58,7 +61,7 @@ class EmployeesControllerTest extends TestCase
      */
     public function testGetEmployeeById()
     {
-        $response = $this->get('/api/employees/1');
+        $response = $this->get('/api/employees/' . $this->employee->id);
         $response->assertStatus(200)->assertJsonStructure(
             [
                 "id",
@@ -67,8 +70,8 @@ class EmployeesControllerTest extends TestCase
                 "date_of_birth",
                 "phone_number",
                 "email",
-                "province",
-                "city",
+                "province_id",
+                "city_id",
                 "street",
                 "zip_code",
                 "ktp_number",
@@ -119,5 +122,34 @@ class EmployeesControllerTest extends TestCase
         ]);
 
         $response->assertStatus(201)->assertJsonStructure(["message"]);
+    }
+
+    /**
+     * Test update resource
+     *
+     * @return void
+     */
+    public function testUpdateEmployee()
+    {
+        $image =  UploadedFile::fake()->image("images-updated.jpg");
+
+        $response = $this->withHeader("Accept", "application/json")->patch("/api/employees/" . $this->employee->id, [
+            'first_name' => "Jhon",
+            'last_name' => "Doe",
+            'date_of_birth' => "2022-01-01",
+            'phone_number' => "0987654321123",
+            'email' => "jhon@app.com",
+            'province_id' => 1,
+            'city_id' => 1,
+            'street' => "Menteng Stree No. VII",
+            'zip_code' => "202112",
+            'ktp_number' => "999999999999",
+            'ktp_file' => $image,
+            // 'position_id' => 1,
+            // 'bank_id' => 1,
+            'account_number' => "999999999999",
+        ]);
+
+        $response->assertStatus(200)->assertJsonStructure(["message"]);
     }
 }

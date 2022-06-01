@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Banks;
+use App\Models\Positions;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EmployeesFactory extends Factory
@@ -21,6 +23,8 @@ class EmployeesFactory extends Factory
             "ktp_number" => $this->faker->numerify("############"),
             "date_of_birth" => $this->faker->date(),
             "account_number" => $this->faker->numerify("################"),
+            "position_id" => Positions::inRandomOrder()->first()->id,
+            "bank_id" => Banks::inRandomOrder()->first()->id,
         ];
     }
 }
