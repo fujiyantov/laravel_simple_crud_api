@@ -73,7 +73,7 @@ class EmployeesController extends Controller
     public function show($id)
     {
         $resource = Employees::findOrFail($id);
-        return $resource;
+        return new EmployeesResource($resource);
     }
 
     /**
