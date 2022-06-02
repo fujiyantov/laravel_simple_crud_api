@@ -134,5 +134,9 @@ class EmployeesController extends Controller
     {
         $resource = Employees::findOrFail($id);
         $resource->delete();
+
+        return response()->json([
+            "message" => "delete employee has been successfully"
+        ], Response::HTTP_OK);
     }
 }
