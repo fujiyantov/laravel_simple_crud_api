@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreEmployeesRequest;
 use App\Http\Requests\UpdateEmployeesRequest;
+use App\Http\Resources\EmployeesResource;
 use Symfony\Component\HttpFoundation\Response;
 
 class EmployeesController extends Controller
@@ -18,9 +19,8 @@ class EmployeesController extends Controller
      */
     public function index()
     {
-
-        $perPage = (int) request()->get('limit');
-        $perPage = $perPage >= 1 && $perPage <= 100 ? $perPage : 20;
+        // $perPage = (int) request()->get('limit');
+        // $perPage = $perPage >= 1 && $perPage <= 100 ? $perPage : 20;
 
         $query = Employees::whereNotNull('position_id');
 
@@ -35,8 +35,9 @@ class EmployeesController extends Controller
             });
         }
 
-        $collections = $query->paginate($perPage);
-        return $collections;
+        // $collections = $query->paginate($perPage);
+        $collections = $query->orderBy('id', 'desc')->get();
+        return EmployeesResource::collection($collections);
     }
 
     /**

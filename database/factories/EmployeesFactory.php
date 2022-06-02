@@ -22,6 +22,7 @@ class EmployeesFactory extends Factory
             "email" => $this->faker->email(),
             "ktp_number" => $this->faker->numerify("############"),
             "date_of_birth" => $this->faker->date(),
+            "street" => $this->faker->address(),
             "account_number" => $this->faker->numerify("################"),
             "position_id" => Positions::inRandomOrder()->first()->id,
             "bank_id" => Banks::inRandomOrder()->first()->id,
